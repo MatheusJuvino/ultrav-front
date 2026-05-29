@@ -1,14 +1,17 @@
 # Ultra V — Ótica Premium
 
-Projeto acadêmico de uma loja virtual de óculos (ótica). O sistema é composto por
-um **frontend** em Next.js 16 + TypeScript e um **backend** em Java 17 com Spring Boot.
+Projeto acadêmico de uma loja virtual de óculos. O sistema é dividido em
+um **frontend** em Next.js 16 + TypeScript e um **backend** em Java 17 com
+Spring Boot. O banco utilizado é MySQL.
 
 ## Estrutura
 
 ```
 ultrav-front/
 ├── frontend/   # Next.js (App Router) + TypeScript
-└── backend/    # Spring Boot 4 + JPA + MySQL
+├── backend/    # Spring Boot 4 + JPA + MySQL
+└── database/
+    └── ultrav.sql   # Script para criar o banco e popular os produtos
 ```
 
 ## Pré-requisitos
@@ -17,42 +20,48 @@ ultrav-front/
 |------------|--------------------|
 | Node.js    | 18 ou superior     |
 | npm        | 9 ou superior      |
-| Java JDK   | 17                 |
+| Java JDK   | 17 ou superior     |
 | MySQL      | 8.x rodando em `localhost:3306` |
 
 > O Maven não precisa estar instalado: o projeto usa o `mvnw` (Maven Wrapper).
 
-## Banco de dados
+## 1) Banco de dados
 
-O backend espera um MySQL local com as credenciais abaixo
-(arquivo `backend/src/main/resources/application.properties`):
+A configuração já está pronta em `backend/src/main/resources/application.properties`:
 
 ```
-url:      jdbc:mysql://localhost:3306/ultrav?createDatabaseIfNotExist=true
+url:      jdbc:mysql://localhost:3306/ultrav
 usuário:  root
 senha:    root
 ```
 
-O Hibernate cria as tabelas automaticamente (`ddl-auto=update`) ao subir o serviço.
+Para criar o banco e popular a tabela de produtos é só rodar o script
+`database/ultrav.sql`. Escolha uma das opções:
 
-## Como rodar
+**Pelo terminal:**
+```bash
+mysql -u root -p < database/ultrav.sql
+```
 
-Abra **dois terminais**, um para cada módulo.
+**Pelo MySQL Workbench:**
+1. Abra o arquivo `database/ultrav.sql`.
+2. Clique no botão de raio (Execute).
 
-### 1) Backend (porta 8080)
+Pronto: o banco `ultrav` e todas as tabelas estarão criados, com 6 produtos
+de exemplo já cadastrados.
 
-**Com MySQL (config padrão):**
+> Caso prefira não rodar o script, o próprio Spring Boot cria as tabelas
+> automaticamente na primeira execução (`spring.jpa.hibernate.ddl-auto=update`)
+> e o `DataLoader` insere os mesmos produtos iniciais.
+
+## 2) Backend (porta 8080)
+
+Em um terminal:
+
 ```bash
 cd backend
 ./mvnw spring-boot:run        # Linux/macOS
 mvnw.cmd spring-boot:run      # Windows
-```
-
-**Sem MySQL (banco H2 em memória — ideal para testar rapidinho):**
-```bash
-cd backend
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev      # Linux/macOS
-mvnw.cmd spring-boot:run -D"spring-boot.run.profiles=dev"  # Windows
 ```
 
 A API ficará disponível em `http://localhost:8080`.
@@ -67,7 +76,9 @@ Principais rotas:
 - `POST /api/carrinho/{idCliente}/adicionar` — itens do carrinho
 - `POST /pagamento/criar-preferencia` — gera link de pagamento (Mercado Pago)
 
-### 2) Frontend (porta 3000)
+## 3) Frontend (porta 3000)
+
+Em outro terminal:
 
 ```bash
 cd frontend
@@ -79,17 +90,22 @@ Abra `http://localhost:3000` no navegador.
 
 ## Pagamento
 
-A finalização de compra usa o **Checkout Pro do Mercado Pago**. O backend expõe
-`POST /pagamento/criar-preferencia`, recebe os itens do carrinho e devolve a URL
-de pagamento, para a qual o frontend redireciona o usuário automaticamente.
+A finalização de compra usa o **Checkout Pro do Mercado Pago**. O backend
+expõe `POST /pagamento/criar-preferencia`, recebe os itens do carrinho e
+devolve a URL para a qual o frontend redireciona o usuário automaticamente.
+O token de teste já vem configurado em `PagamentoController.java`.
 
-O token de teste já vem configurado em `PagamentoController.java`. Para produção,
-substitua por uma variável de ambiente.
+## Resumo dos comandos
 
-## Observações
+```bash
+# 1. Criar o banco (uma vez)
+mysql -u root -p < database/ultrav.sql
 
-- A vitrine inicial busca os produtos no backend. Se o backend ainda não
-  estiver rodando, o front exibe um aviso amigável.
-- A página de detalhes do produto e os relacionados usam um catálogo local
-  (`frontend/lib/produtos.ts`), apenas para fins de demonstração visual.
-- Projeto desenvolvido para a disciplina de Expotech 2026.
+# 2. Subir o backend
+cd backend && ./mvnw spring-boot:run
+
+# 3. Em outro terminal, subir o frontend
+cd frontend && npm install && npm run dev
+```
+
+Projeto desenvolvido para a disciplina de Expotech 2026.

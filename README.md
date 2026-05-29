@@ -8,10 +8,22 @@ Spring Boot. O banco utilizado é MySQL.
 
 ```
 ultrav-front/
-├── frontend/   # Next.js (App Router) + TypeScript
-├── backend/    # Spring Boot 4 + JPA + MySQL
+├── frontend/                       # Next.js (App Router) + TypeScript
+│   ├── app/                        # Páginas: home, carrinho, contato, produto/[id]
+│   ├── components/                 # Hero, Products, Navbar, Footer, OculosSVG, etc.
+│   └── lib/                        # CarrinhoContext + catálogo de fallback
+│
+├── backend/                        # Spring Boot 4 + JPA + MySQL
+│   └── src/main/java/br/com/ultravexpotech/
+│       ├── UltraVExpotechApplication.java
+│       ├── DataLoader.java         # Popula produtos iniciais na 1ª execução
+│       ├── controller/             # Produto, Carrinho, Usuario, Administrador, Pagamento
+│       ├── service/                # Lógica de negócio
+│       ├── repository/             # Spring Data JPA
+│       └── model/                  # Entidades JPA
+│
 └── database/
-    └── ultrav.sql   # Script para criar o banco e popular os produtos
+    └── ultrav.sql                  # Cria o banco, tabelas e produtos iniciais
 ```
 
 ## Pré-requisitos

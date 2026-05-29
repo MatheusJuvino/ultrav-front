@@ -41,10 +41,18 @@ Abra **dois terminais**, um para cada módulo.
 
 ### 1) Backend (porta 8080)
 
+**Com MySQL (config padrão):**
 ```bash
 cd backend
 ./mvnw spring-boot:run        # Linux/macOS
 mvnw.cmd spring-boot:run      # Windows
+```
+
+**Sem MySQL (banco H2 em memória — ideal para testar rapidinho):**
+```bash
+cd backend
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev      # Linux/macOS
+mvnw.cmd spring-boot:run -D"spring-boot.run.profiles=dev"  # Windows
 ```
 
 A API ficará disponível em `http://localhost:8080`.

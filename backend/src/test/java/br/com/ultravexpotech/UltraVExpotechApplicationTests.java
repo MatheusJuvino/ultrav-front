@@ -1,0 +1,13 @@
+package br.com.ultravexpotech;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class UltraVExpotechApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}

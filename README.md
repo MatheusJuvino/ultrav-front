@@ -1,123 +1,99 @@
 # Ultra V — Ótica Premium
 
-Projeto acadêmico de uma loja virtual de óculos. O sistema é dividido em
-um **frontend** em Next.js 16 + TypeScript e um **backend** em Java 17 com
-Spring Boot. O banco utilizado é MySQL.
+Loja virtual de óculos. Frontend em **Next.js 16 + TypeScript** e backend em
+**Java 17 + Spring Boot 4 + MySQL**. Projeto da disciplina Expotech 2026.
 
-## Estrutura
+---
+
+## Como rodar (Windows)
+
+### 1. Instale o necessário (uma vez só)
+
+| Ferramenta | Onde baixar | Observação |
+|---|---|---|
+| Node.js 18+   | https://nodejs.org              | — |
+| JDK 17+       | https://adoptium.net            | — |
+| MySQL 8.x     | https://dev.mysql.com/downloads | **senha do `root` = `root`** |
+
+> Se sua senha do MySQL não for `root`, edite o arquivo
+> `backend/src/main/resources/application.properties` (linhas
+> `spring.datasource.username` / `password`).
+
+### 2. Garanta que o serviço do MySQL está rodando
+
+No Windows: `Win + R` → `services.msc` → procure `MySQL80` (ou similar) → clique direito → Iniciar.
+
+### 3. Dê um duplo-clique em `start.bat`
+
+Pronto. O script vai:
+
+1. Localizar o JDK 17+ na sua máquina automaticamente
+2. Subir o backend em `http://localhost:8080` (numa janela)
+3. Subir o frontend em `http://localhost:3000` (em outra janela)
+4. O Hibernate cria as tabelas e o `DataLoader` insere 6 produtos de exemplo na primeira execução
+
+Aguarde uns 30 segundos as duas janelas terminarem de subir e abra
+**http://localhost:3000** no navegador.
+
+Para parar: feche as duas janelas pretas que apareceram.
+
+---
+
+## Como rodar (Linux / macOS)
+
+```bash
+# Terminal 1
+cd backend && ./mvnw spring-boot:run
+
+# Terminal 2
+cd frontend && npm install && npm run dev
+```
+
+---
+
+## Estrutura do projeto
 
 ```
 ultrav-front/
-├── frontend/                       # Next.js (App Router) + TypeScript
-│   ├── app/                        # Páginas: home, carrinho, contato, produto/[id]
-│   ├── components/                 # Hero, Products, Navbar, Footer, OculosSVG, etc.
-│   └── lib/                        # CarrinhoContext + catálogo de fallback
+├── frontend/                # Next.js (App Router) + TypeScript
+│   ├── app/                 # home, carrinho, contato, produto/[id]
+│   ├── components/          # Hero, Products, Navbar, Footer, OculosSVG…
+│   └── lib/                 # CarrinhoContext + catálogo local
 │
-├── backend/                        # Spring Boot 4 + JPA + MySQL
+├── backend/                 # Spring Boot 4 + JPA
 │   └── src/main/java/br/com/ultravexpotech/
-│       ├── UltraVExpotechApplication.java
-│       ├── DataLoader.java         # Popula produtos iniciais na 1ª execução
-│       ├── controller/             # Produto, Carrinho, Usuario, Administrador, Pagamento
-│       ├── service/                # Lógica de negócio
-│       ├── repository/             # Spring Data JPA
-│       └── model/                  # Entidades JPA
+│       ├── controller/      # Produto, Carrinho, Usuario, Admin, Pagamento
+│       ├── service/         # Lógica de negócio
+│       ├── repository/      # Spring Data JPA
+│       ├── model/           # Entidades JPA
+│       └── DataLoader.java  # Popula 6 produtos na 1ª execução
 │
-└── database/
-    └── ultrav.sql                  # Cria o banco, tabelas e produtos iniciais
+├── database/
+│   └── ultrav.sql           # (Opcional) Cria banco/tabelas/produtos manualmente
+│
+└── start.bat                # Sobe back + front num clique (Windows)
 ```
 
-## Pré-requisitos
+---
 
-| Ferramenta | Versão recomendada |
-|------------|--------------------|
-| Node.js    | 18 ou superior     |
-| npm        | 9 ou superior      |
-| Java JDK   | 17 ou superior     |
-| MySQL      | 8.x rodando em `localhost:3306` |
+## Endpoints da API
 
-> O Maven não precisa estar instalado: o projeto usa o `mvnw` (Maven Wrapper).
-
-## 1) Banco de dados
-
-A configuração já está pronta em `backend/src/main/resources/application.properties`:
-
-```
-url:      jdbc:mysql://localhost:3306/ultrav
-usuário:  root
-senha:    root
-```
-
-Para criar o banco e popular a tabela de produtos é só rodar o script
-`database/ultrav.sql`. Escolha uma das opções:
-
-**Pelo terminal:**
-```bash
-mysql -u root -p < database/ultrav.sql
-```
-
-**Pelo MySQL Workbench:**
-1. Abra o arquivo `database/ultrav.sql`.
-2. Clique no botão de raio (Execute).
-
-Pronto: o banco `ultrav` e todas as tabelas estarão criados, com 6 produtos
-de exemplo já cadastrados.
-
-> Caso prefira não rodar o script, o próprio Spring Boot cria as tabelas
-> automaticamente na primeira execução (`spring.jpa.hibernate.ddl-auto=update`)
-> e o `DataLoader` insere os mesmos produtos iniciais.
-
-## 2) Backend (porta 8080)
-
-Em um terminal:
-
-```bash
-cd backend
-./mvnw spring-boot:run        # Linux/macOS
-mvnw.cmd spring-boot:run      # Windows
-```
-
-A API ficará disponível em `http://localhost:8080`.
-
-Principais rotas:
-- `GET  /produtos` — lista os produtos
+- `GET  /produtos` — lista todos os produtos
 - `GET  /produto/{id}` — busca produto por id
 - `GET  /categoria/{categoria}` — lista por categoria
 - `GET  /pesquisa/{nome}` — busca por nome
 - `POST /cadastro` / `POST /login` — usuários
 - `POST /adm/cadastro` / `POST /adm/login` — administradores
 - `POST /api/carrinho/{idCliente}/adicionar` — itens do carrinho
-- `POST /pagamento/criar-preferencia` — gera link de pagamento (Mercado Pago)
+- `POST /pagamento/criar-preferencia` — gera link de checkout (Mercado Pago)
 
-## 3) Frontend (porta 3000)
+---
 
-Em outro terminal:
+## Solução de problemas
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Abra `http://localhost:3000` no navegador.
-
-## Pagamento
-
-A finalização de compra usa o **Checkout Pro do Mercado Pago**. O backend
-expõe `POST /pagamento/criar-preferencia`, recebe os itens do carrinho e
-devolve a URL para a qual o frontend redireciona o usuário automaticamente.
-O token de teste já vem configurado em `PagamentoController.java`.
-
-## Resumo dos comandos
-
-```bash
-# 1. Criar o banco (uma vez)
-mysql -u root -p < database/ultrav.sql
-
-# 2. Subir o backend
-cd backend && ./mvnw spring-boot:run
-
-# 3. Em outro terminal, subir o frontend
-cd frontend && npm install && npm run dev
-```
-
-Projeto desenvolvido para a disciplina de Expotech 2026.
+| Sintoma | Causa | Como resolver |
+|---|---|---|
+| "Backend não encontrado" no front | Backend não subiu | Confira se o MySQL está rodando, depois rode `start.bat` de novo |
+| `Communications link failure` | MySQL parado | Inicie o serviço do MySQL no Windows |
+| `Access denied for user 'root'` | Senha diferente | Edite `backend/src/main/resources/application.properties` |
+| Backend não acha JDK | JDK 17+ não está no PATH nem em local conhecido | Instale o JDK 17+ ou defina `JAVA_HOME` antes de rodar |

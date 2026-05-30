@@ -1,99 +1,101 @@
 # Ultra V — Ótica Premium
 
 Loja virtual de óculos. Frontend em **Next.js 16 + TypeScript** e backend em
-**Java 17 + Spring Boot 4 + MySQL**. Projeto da disciplina Expotech 2026.
+**Java 17 + Spring Boot 4**. Projeto da disciplina Expotech 2026.
 
 ---
 
-## Como rodar (Windows)
+## Como rodar (1 clique no Windows)
 
-### 1. Instale o necessário (uma vez só)
+### Pré-requisitos (uma vez só)
 
-| Ferramenta | Onde baixar | Observação |
-|---|---|---|
-| Node.js 18+   | https://nodejs.org              | — |
-| JDK 17+       | https://adoptium.net            | — |
-| MySQL 8.x     | https://dev.mysql.com/downloads | **senha do `root` = `1234`** |
+| Ferramenta | Onde baixar |
+|---|---|
+| Node.js 18+   | https://nodejs.org   |
+| JDK 17+       | https://adoptium.net |
 
-> Se sua senha do MySQL não for `1234`, edite o arquivo
-> `backend/src/main/resources/application.properties` (linhas
-> `spring.datasource.username` / `password`).
+> **NÃO precisa de MySQL nem nenhum banco instalado.** O projeto já vem
+> com banco H2 em memória — funciona out of the box.
 
-### 2. Garanta que o serviço do MySQL está rodando
+### Rodar
 
-No Windows: `Win + R` → `services.msc` → procure `MySQL80` (ou similar) → clique direito → Iniciar.
+**Duplo-clique em `start.bat`.**
 
-### 3. Dê um duplo-clique em `start.bat`
+Pronto. Em alguns segundos:
+- Backend sobe em `http://localhost:8080`
+- Frontend sobe em `http://localhost:3000`
+- Tudo aparece numa janela só com prefixos `[BACK]` e `[FRONT]`
 
-Pronto. O script vai:
+Abra **http://localhost:3000** no navegador.
 
-1. Localizar o JDK 17+ na sua máquina automaticamente
-2. Subir o backend em `http://localhost:8080` (numa janela)
-3. Subir o frontend em `http://localhost:3000` (em outra janela)
-4. O Hibernate cria as tabelas e o `DataLoader` insere 6 produtos de exemplo na primeira execução
-
-Aguarde uns 30 segundos as duas janelas terminarem de subir e abra
-**http://localhost:3000** no navegador.
-
-Para parar: feche as duas janelas pretas que apareceram.
+Para parar: `Ctrl+C` na janela.
 
 ---
 
 ## Como rodar (Linux / macOS)
 
 ```bash
-# Terminal 1
-cd backend && ./mvnw spring-boot:run
-
-# Terminal 2
-cd frontend && npm install && npm run dev
+npm install
+npm start
 ```
+
+(Cobre tanto a instalação do front quanto o `mvnw` do backend.)
 
 ---
 
-## Estrutura do projeto
+## Banco de dados
+
+Por padrão usa **H2 em memória** — zero instalação. Os dados ficam só
+enquanto o backend está rodando, e o `DataLoader` semeia 6 produtos
+toda vez que você sobe o servidor.
+
+Console do H2 (opcional): http://localhost:8080/h2-console
+JDBC URL: `jdbc:h2:mem:ultravdb` · usuário `sa` · senha vazia.
+
+### Quero usar MySQL ao invés de H2
+
+Edite `backend/src/main/resources/application.properties`:
+
+1. Comente as 7 linhas do bloco H2
+2. Descomente as 4 linhas do bloco MySQL
+3. Ajuste a senha (`spring.datasource.password`) se necessário
+4. (Opcional) Rode o script `database/ultrav.sql` no seu MySQL — ou
+   simplesmente suba o backend que o Hibernate cria as tabelas
+   sozinho e o `DataLoader` insere os produtos.
+
+---
+
+## Estrutura
 
 ```
 ultrav-front/
-├── frontend/                # Next.js (App Router) + TypeScript
-│   ├── app/                 # home, carrinho, contato, produto/[id]
-│   ├── components/          # Hero, Products, Navbar, Footer, OculosSVG…
-│   └── lib/                 # CarrinhoContext + catálogo local
-│
-├── backend/                 # Spring Boot 4 + JPA
-│   └── src/main/java/br/com/ultravexpotech/
-│       ├── controller/      # Produto, Carrinho, Usuario, Admin, Pagamento
-│       ├── service/         # Lógica de negócio
-│       ├── repository/      # Spring Data JPA
-│       ├── model/           # Entidades JPA
-│       └── DataLoader.java  # Popula 6 produtos na 1ª execução
-│
-├── database/
-│   └── ultrav.sql           # (Opcional) Cria banco/tabelas/produtos manualmente
-│
-└── start.bat                # Sobe back + front num clique (Windows)
+├── frontend/                 # Next.js (App Router) + TypeScript
+├── backend/                  # Spring Boot 4 + JPA + H2 (padrão) / MySQL
+├── database/ultrav.sql       # Script MySQL opcional
+├── start.bat                 # Sobe back + front num clique (Windows)
+└── package.json              # Orquestra back + front com concurrently
 ```
 
 ---
 
 ## Endpoints da API
 
-- `GET  /produtos` — lista todos os produtos
-- `GET  /produto/{id}` — busca produto por id
-- `GET  /categoria/{categoria}` — lista por categoria
+- `GET  /produtos` — lista produtos
+- `GET  /produto/{id}` — busca por id
+- `GET  /categoria/{categoria}` — filtra por categoria
 - `GET  /pesquisa/{nome}` — busca por nome
 - `POST /cadastro` / `POST /login` — usuários
 - `POST /adm/cadastro` / `POST /adm/login` — administradores
-- `POST /api/carrinho/{idCliente}/adicionar` — itens do carrinho
-- `POST /pagamento/criar-preferencia` — gera link de checkout (Mercado Pago)
+- `POST /api/carrinho/{idCliente}/adicionar` — carrinho
+- `POST /pagamento/criar-preferencia` — checkout Mercado Pago
 
 ---
 
 ## Solução de problemas
 
-| Sintoma | Causa | Como resolver |
-|---|---|---|
-| "Backend não encontrado" no front | Backend não subiu | Confira se o MySQL está rodando, depois rode `start.bat` de novo |
-| `Communications link failure` | MySQL parado | Inicie o serviço do MySQL no Windows |
-| `Access denied for user 'root'` | Senha diferente | Edite `backend/src/main/resources/application.properties` |
-| Backend não acha JDK | JDK 17+ não está no PATH nem em local conhecido | Instale o JDK 17+ ou defina `JAVA_HOME` antes de rodar |
+| Sintoma | Solução |
+|---|---|
+| `start.bat` reclama de Java | Instale o JDK 17+ em https://adoptium.net |
+| `start.bat` reclama de npm | Instale o Node.js 18+ em https://nodejs.org |
+| Front mostra produtos sem o backend | É proposital: catálogo local de fallback |
+| Quero usar MySQL | Veja a seção "Banco de dados" acima |

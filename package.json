@@ -1,0 +1,15 @@
+{
+  "name": "ultrav",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ultra V - frontend Next.js + backend Spring Boot",
+  "scripts": {
+    "postinstall": "cd frontend && npm install --no-audit --no-fund",
+    "start": "concurrently --kill-others-on-fail --names \"BACK,FRONT\" --prefix-colors \"yellow,cyan\" \"npm:start:back\" \"npm:start:front\"",
+    "start:back": "cd backend && mvnw.cmd spring-boot:run",
+    "start:front": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

@@ -21,7 +21,14 @@
     </properties>
 
     <dependencies>
-        <!-- MySQL driver -->
+        <!-- Banco padrao: H2 em memoria (nao precisa instalar nada) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- MySQL driver: usado apenas se voce trocar a config para MySQL -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>

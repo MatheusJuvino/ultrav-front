@@ -15,6 +15,7 @@ type Produto = {
   preco: number;
   parcelas?: number;
   destaque?: boolean;
+  imagemUrl?: string;
 };
 
 const tipoMap: Record<string, "sol" | "grau" | "armacao"> = {
@@ -63,7 +64,7 @@ export default function Products() {
   };
 
   return (
-    <section style={{ padding: "5rem 2rem 0", maxWidth: 1100, margin: "0 auto" }}>
+    <section id="produtos" style={{ padding: "5rem 2rem 0", maxWidth: 1100, margin: "0 auto", scrollMarginTop: "80px" }}>
       <div style={{ fontSize: 10, letterSpacing: "0.18em", textTransform: "uppercase", color: "#b8914a", marginBottom: "0.8rem" }}>Destaques</div>
       <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(1.8rem, 3vw, 2.8rem)", fontWeight: 600, marginBottom: "0.8rem" }}>
         Mais procurados
@@ -80,8 +81,12 @@ export default function Products() {
               onMouseLeave={() => setHover(null)}
               style={{ background: "#faf7f2", border: `0.5px solid ${hover === p.id ? "#b8914a" : "#e0d5c5"}`, borderRadius: 3, overflow: "hidden", cursor: "pointer", transform: hover === p.id ? "translateY(-4px)" : "translateY(0)", transition: "all 0.25s" }}
             >
-              <div style={{ height: 200, background: "#f0ebe2", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                <OculosSVG cor={corMap[p.marca ?? ""] ?? "#2c1f0e"} tamanho={180} tipo={tipoMap[p.categoria] ?? "grau"} />
+              <div style={{ height: 220, background: "#f0ebe2", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                {p.imagemUrl ? (
+                  <img src={p.imagemUrl} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <OculosSVG cor={corMap[p.marca ?? ""] ?? "#2c1f0e"} tamanho={180} tipo={tipoMap[p.categoria] ?? "grau"} />
+                )}
                 {(p.badge || p.destaque) && (
                   <div style={{ position: "absolute", top: "1rem", left: "1rem", background: "#2c1f0e", color: "#faf7f2", fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase", padding: "4px 10px" }}>{p.badge ?? "Destaque"}</div>
                 )}

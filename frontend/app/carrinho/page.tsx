@@ -5,7 +5,7 @@ import { useCarrinho } from "@/lib/CarrinhoContext";
 import OculosSVG from "@/components/OculosSVG";
 
 const tipoMap: Record<string, "sol" | "grau" | "armacao"> = {
-  Sol: "sol", Grau: "grau", Armação: "armacao",
+  Sol: "sol", Grau: "grau", Armação: "armacao", Armacao: "armacao",
 };
 
 export default function CarrinhoPage() {
@@ -65,8 +65,12 @@ export default function CarrinhoPage() {
                 display: "flex", gap: "1.5rem", alignItems: "center",
                 padding: "1.5rem 0", borderBottom: "0.5px solid #e0d5c5",
               }}>
-                <div style={{ background: "#f0ebe2", borderRadius: 3, padding: "1rem", flexShrink: 0 }}>
-                  <OculosSVG cor={item.cor} tamanho={100} tipo={tipoMap[item.categoria] ?? "grau"} />
+                <div style={{ background: "#f0ebe2", borderRadius: 3, padding: item.imagemUrl ? 0 : "1rem", flexShrink: 0, width: 130, height: 130, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                  {item.imagemUrl ? (
+                    <img src={item.imagemUrl} alt={item.nome} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <OculosSVG cor={item.cor} tamanho={100} tipo={tipoMap[item.categoria] ?? "grau"} />
+                  )}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: "#b8914a", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 4 }}>{item.marca}</div>

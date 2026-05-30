@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Jost, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { CarrinhoProvider } from "@/lib/CarrinhoContext";
+import { AuthProvider } from "@/lib/AuthContext";
 import Navbar from "@/components/Navbar";
 
 const jost = Jost({
@@ -26,10 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR">
       <body className={`${jost.variable} ${cormorant.variable}`}>
-        <CarrinhoProvider>
-          <Navbar />
-          {children}
-        </CarrinhoProvider>
+        <AuthProvider>
+          <CarrinhoProvider>
+            <Navbar />
+            {children}
+          </CarrinhoProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -32,6 +32,20 @@ Para parar: `Ctrl+C` na janela.
 
 ---
 
+## Acesso administrativo
+
+Acesse `http://localhost:3000/admin` para o painel de admin. Já existe um
+usuário de demonstração criado automaticamente:
+
+- **Usuário:** `admin`
+- **Senha:** `admin123`
+
+No painel, o admin pode **cadastrar, editar e remover produtos** que aparecem
+na vitrine. Usuários comuns podem se cadastrar em `/cadastro` para fazer
+compras (o checkout via Mercado Pago já está integrado).
+
+---
+
 ## Como rodar (Linux / macOS)
 
 ```bash
@@ -80,6 +94,7 @@ ultrav-front/
 
 ## Endpoints da API
 
+**Públicas**
 - `GET  /produtos` — lista produtos
 - `GET  /produto/{id}` — busca por id
 - `GET  /categoria/{categoria}` — filtra por categoria
@@ -88,6 +103,11 @@ ultrav-front/
 - `POST /adm/cadastro` / `POST /adm/login` — administradores
 - `POST /api/carrinho/{idCliente}/adicionar` — carrinho
 - `POST /pagamento/criar-preferencia` — checkout Mercado Pago
+
+**Apenas admin** (header `X-Admin-Id: <id_do_admin>`)
+- `POST   /produtos` — cadastrar produto
+- `PUT    /produtos/{id}` — editar produto
+- `DELETE /produtos/{id}` — remover produto
 
 ---
 

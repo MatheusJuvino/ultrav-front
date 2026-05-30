@@ -2,9 +2,9 @@ import Link from "next/link";
 
 export default function Footer() {
   const cols = [
-    { title: "Produtos", links: [{ label: "Óculos de Sol", href: "/" }, { label: "Óculos de Grau", href: "/" }, { label: "Armações", href: "/" }, { label: "Lentes", href: "/" }] },
-    { title: "Empresa", links: [{ label: "Sobre nós", href: "/" }, { label: "Blog", href: "/" }, { label: "Trabalhe conosco", href: "/" }, { label: "Contato", href: "/contato" }] },
-    { title: "Suporte", links: [{ label: "Trocas e devoluções", href: "/" }, { label: "Prazo de entrega", href: "/" }, { label: "Garantia", href: "/" }, { label: "FAQ", href: "/" }] },
+    { title: "Produtos", links: [{ label: "Óculos de Sol", href: "/?cat=Sol" }, { label: "Óculos de Grau", href: "/?cat=Grau" }, { label: "Armações", href: "/?cat=Armacao" }, { label: "Ver todos", href: "/#produtos" }] },
+    { title: "Conta", links: [{ label: "Entrar", href: "/login" }, { label: "Criar conta", href: "/cadastro" }, { label: "Meu carrinho", href: "/carrinho" }, { label: "Área admin", href: "/admin" }] },
+    { title: "Suporte", links: [{ label: "Contato", href: "/contato" }, { label: "WhatsApp", href: "https://wa.me/5511999999999" }, { label: "Trocas", href: "/contato" }, { label: "FAQ", href: "/contato" }] },
   ];
 
   return (

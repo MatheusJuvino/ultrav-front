@@ -1,46 +1,81 @@
 package br.com.ultravexpotech.controller;
 
 import br.com.ultravexpotech.model.Produto;
+import br.com.ultravexpotech.repository.AdministradorRepository;
 import br.com.ultravexpotech.repository.ProdutoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping
 @CrossOrigin(origins = "*")
 public class ProdutoController {
 
-    @Autowired
-    //
-    private ProdutoRepository repository;
+    private final ProdutoRepository repository;
+    private final AdministradorRepository adminRepository;
 
-    //listar todos os produtos
+    public ProdutoController(ProdutoRepository repository, AdministradorRepository adminRepository) {
+        this.repository = repository;
+        this.adminRepository = adminRepository;
+    }
+
+    // ----- Leitura (publica) ---------------------------------------------
     @GetMapping("/produtos")
     public List<Produto> listar() {
         return repository.findAll();
     }
 
-  //bruscar por id
     @GetMapping("/produto/{id}")
     public Produto buscarPorId(@PathVariable Long id) {
         return repository.findById(id).orElse(null);
     }
 
-  //buscar por categoria
     @GetMapping("/categoria/{categoria}")
-    public List<Produto> buscarCategoria(
-            @PathVariable String categoria
-    ) {
+    public List<Produto> buscarCategoria(@PathVariable String categoria) {
         return repository.findByCategoria(categoria);
     }
 
-  //pesquisar produto
     @GetMapping("/pesquisa/{nome}")
-    public List<Produto> pesquisar(
-            @PathVariable String nome
-    ) {
+    public List<Produto> pesquisar(@PathVariable String nome) {
         return repository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    // ----- Escrita (apenas admin) ----------------------------------------
+    @PostMapping("/produtos")
+    public ResponseEntity<?> criar(@RequestBody Produto produto,
+                                   @RequestHeader(value = "X-Admin-Id", required = false) Integer adminId) {
+        if (!isAdmin(adminId)) return ResponseEntity.status(401).body("Apenas administradores podem cadastrar produtos.");
+        produto.setId(null);
+        return ResponseEntity.ok(repository.save(produto));
+    }
+
+    @PutMapping("/produtos/{id}")
+    public ResponseEntity<?> atualizar(@PathVariable Long id,
+                                       @RequestBody Produto produto,
+                                       @RequestHeader(value = "X-Admin-Id", required = false) Integer adminId) {
+        if (!isAdmin(adminId)) return ResponseEntity.status(401).body("Apenas administradores podem editar produtos.");
+        return repository.findById(id).map(p -> {
+            p.setNome(produto.getNome());
+            p.setPreco(produto.getPreco());
+            p.setCategoria(produto.getCategoria());
+            p.setDestaque(produto.getDestaque());
+            p.setDescricao(produto.getDescricao());
+            p.setImagemUrl(produto.getImagemUrl());
+            return ResponseEntity.ok(repository.save(p));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/produtos/{id}")
+    public ResponseEntity<?> deletar(@PathVariable Long id,
+                                     @RequestHeader(value = "X-Admin-Id", required = false) Integer adminId) {
+        if (!isAdmin(adminId)) return ResponseEntity.status(401).body("Apenas administradores podem remover produtos.");
+        if (!repository.existsById(id)) return ResponseEntity.notFound().build();
+        repository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    private boolean isAdmin(Integer adminId) {
+        return adminId != null && adminRepository.existsById(adminId);
     }
 }

@@ -121,9 +121,11 @@ export default function AdminProdutosPage() {
               <div>
                 <label style={lbl}>Categoria</label>
                 <select style={inp} value={editando.categoria} onChange={e => setEditando({ ...editando, categoria: e.target.value })}>
-                  <option value="Sol">Sol</option>
-                  <option value="Grau">Grau</option>
-                  <option value="Armacao">Armação</option>
+                  <option value="Sol">☀️ Sol</option>
+                  <option value="Grau">👓 Grau</option>
+                  <option value="Armacao">✨ Armação</option>
+                  <option value="Esportivo">🏃 Esportivo</option>
+                  <option value="Premium">👑 Premium</option>
                 </select>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: "1.6rem" }}>

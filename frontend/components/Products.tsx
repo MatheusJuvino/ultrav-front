@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import OculosSVG from "@/components/OculosSVG";
 import { useCarrinho } from "@/lib/CarrinhoContext";
+import { produtos as produtosLocal } from "@/lib/produtos";
 
 type Produto = {
   id: number;
@@ -28,18 +29,22 @@ const corMap: Record<string, string> = {
 };
 
 export default function Products() {
-  const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState(false);
+  const [produtos, setProdutos] = useState<Produto[]>(produtosLocal);
+  const [loading, setLoading] = useState(false);
   const [hover, setHover] = useState<number | null>(null);
   const [adicionado, setAdicionado] = useState<number | null>(null);
   const { adicionar } = useCarrinho();
 
+  // Tenta puxar do backend; se ele estiver fora ou retornar vazio, mantem o catalogo local
   useEffect(() => {
     fetch("http://localhost:8080/produtos")
-      .then((res) => res.json())
-      .then((data) => { setProdutos(data); setLoading(false); })
-      .catch(() => { setErro(true); setLoading(false); });
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setProdutos(data);
+      })
+      .catch(() => {
+        /* mantem produtos locais */
+      });
   }, []);
 
   const handleAdicionar = (e: React.MouseEvent, produto: Produto) => {
@@ -67,7 +72,6 @@ export default function Products() {
         Selecao especial dos modelos favoritos da temporada.
       </p>
       {loading && <div style={{ textAlign: "center", padding: "3rem", color: "#8c7b68" }}>Carregando produtos...</div>}
-      {erro && <div style={{ textAlign: "center", padding: "2rem", background: "#f0ebe2", borderRadius: 4, color: "#8c7b68" }}>Backend nao encontrado. Rode o Spring Boot na porta 8080.</div>}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.5rem" }}>
         {produtos.map((p) => (
           <Link key={p.id} href={`/produto/${p.id}`} style={{ textDecoration: "none", color: "inherit" }}>

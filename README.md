@@ -13,9 +13,9 @@ Loja virtual de óculos. Frontend em **Next.js 16 + TypeScript** e backend em
 |---|---|---|
 | Node.js 18+   | https://nodejs.org              | — |
 | JDK 17+       | https://adoptium.net            | — |
-| MySQL 8.x     | https://dev.mysql.com/downloads | **senha do `root` = `root`** |
+| MySQL 8.x     | https://dev.mysql.com/downloads | **senha do `root` = `1234`** |
 
-> Se sua senha do MySQL não for `root`, edite o arquivo
+> Se sua senha do MySQL não for `1234`, edite o arquivo
 > `backend/src/main/resources/application.properties` (linhas
 > `spring.datasource.username` / `password`).
 
